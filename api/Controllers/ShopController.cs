@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Dtos.Shop;
 using api.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,6 +37,15 @@ namespace api.Controllers
       }
 
       return Ok(shop.ToShopDto());
+    }
+
+    [HttpPost]
+    public IActionResult Create([FromBody] CreateShopDto shopDto)
+    {
+      var shopModel = shopDto.ToShopFromCreateDto();
+      _context.Shop.Add(shopModel);
+      _context.SaveChanges();
+      return CreatedAtAction(nameof(GetById), new { id = shopModel.Id }, shopModel.ToShopDto());
     }
 
   }

@@ -20,5 +20,15 @@ namespace api.Mappers
         Type = shopModel.Type
       };
     }
+
+    public static Shop ToShopFromCreateDto(this CreateShopDto shopDto)
+    {
+      return new Shop{
+        CompanyName = shopDto.CompanyName,
+        Location = shopDto.Location,
+        Industry = shopDto.Industry,
+        Type = shopDto.Type
+      };
+    }
   }
 }
