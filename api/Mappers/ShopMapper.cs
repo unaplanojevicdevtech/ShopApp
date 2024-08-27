@@ -1,0 +1,24 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using api.Dtos.Shop;
+using api.Models;
+
+namespace api.Mappers
+{
+  public static class ShopMapper
+  {
+    public static ShopDto ToShopDto(this Shop shopModel) 
+    {
+      return new ShopDto
+      {
+        Id = shopModel.Id,
+        CompanyName = shopModel.CompanyName,
+        Location = shopModel.Location,
+        Industry = shopModel.Industry,
+        Type = shopModel.Type
+      };
+    }
+  }
+}
