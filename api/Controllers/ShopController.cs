@@ -48,5 +48,26 @@ namespace api.Controllers
       return CreatedAtAction(nameof(GetById), new { id = shopModel.Id }, shopModel.ToShopDto());
     }
 
+    [HttpPut]
+    [Route("{id}")]
+    public IActionResult Update([FromRoute] int id, [FromBody] CreateShopDto shopDto)
+    {
+      var shopModel = _context.Shop.FirstOrDefault(x => x.Id == id);
+
+      if (shopModel == null)
+      {
+        return NotFound();
+      }
+
+      shopModel.CompanyName = shopDto.CompanyName;
+      shopModel.Location = shopDto.Location;
+      shopModel.Industry = shopDto.Industry;
+      shopModel.Type = shopDto.Type;
+
+      _context.SaveChanges();
+
+      return Ok(shopModel.ToShopDto());
+    }
+
   }
 }
