@@ -69,5 +69,23 @@ namespace api.Controllers
       return Ok(shopModel.ToShopDto());
     }
 
+    [HttpDelete]
+    [Route("{id}")]
+    public IActionResult Delete([FromRoute] int id)
+    {
+      var shopModel = _context.Shop.FirstOrDefault(x => x.Id == id);
+
+      if (shopModel == null)
+      {
+        return NotFound();
+      }
+
+      _context.Shop.Remove(shopModel);
+      _context.SaveChanges();
+
+      return NoContent();
+    }
+
+
   }
 }
