@@ -6,6 +6,7 @@ using api.Data;
 using api.Dtos.Shop;
 using api.Mappers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
@@ -20,17 +21,18 @@ namespace api.Controllers
     }
 
     [HttpGet]
-    public IActionResult GetAll() 
+    public async Task<IActionResult> GetAll() 
     {
-      var shops = _context.Shop.ToList()
-        .Select(s => s.ToShopDto());
+      var shops = await _context.Shop.ToListAsync();
+      var shopDto = shops.Select(s => s.ToShopDto());
+      // should we return shopDto?
       return Ok(shops);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById([FromRoute] int id)
+    public async Task<IActionResult> GetById([FromRoute] int id)
     {
-      var shop = _context.Shop.Find(id);
+      var shop = await _context.Shop.FindAsync(id);
 
       if (shop ==  null) {
         return NotFound();
@@ -40,19 +42,19 @@ namespace api.Controllers
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody] CreateShopDto shopDto)
+    public async Task<IActionResult> Create([FromBody] CreateShopDto shopDto)
     {
       var shopModel = shopDto.ToShopFromCreateDto();
-      _context.Shop.Add(shopModel);
-      _context.SaveChanges();
+      await _context.Shop.AddAsync(shopModel);
+      await _context.SaveChangesAsync();
       return CreatedAtAction(nameof(GetById), new { id = shopModel.Id }, shopModel.ToShopDto());
     }
 
     [HttpPut]
     [Route("{id}")]
-    public IActionResult Update([FromRoute] int id, [FromBody] CreateShopDto shopDto)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] CreateShopDto shopDto)
     {
-      var shopModel = _context.Shop.FirstOrDefault(x => x.Id == id);
+      var shopModel = await _context.Shop.FirstOrDefaultAsync(x => x.Id == id);
 
       if (shopModel == null)
       {
@@ -64,16 +66,16 @@ namespace api.Controllers
       shopModel.Industry = shopDto.Industry;
       shopModel.Type = shopDto.Type;
 
-      _context.SaveChanges();
+      await _context.SaveChangesAsync();
 
       return Ok(shopModel.ToShopDto());
     }
 
     [HttpDelete]
     [Route("{id}")]
-    public IActionResult Delete([FromRoute] int id)
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
-      var shopModel = _context.Shop.FirstOrDefault(x => x.Id == id);
+      var shopModel = await _context.Shop.FirstOrDefaultAsync(x => x.Id == id);
 
       if (shopModel == null)
       {
@@ -81,11 +83,9 @@ namespace api.Controllers
       }
 
       _context.Shop.Remove(shopModel);
-      _context.SaveChanges();
+      await _context.SaveChangesAsync();
 
       return NoContent();
     }
-
-
   }
 }
