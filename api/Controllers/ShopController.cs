@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Shop;
+using api.Interfaces;
 using api.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,15 +16,18 @@ namespace api.Controllers
   public class ShopController: ControllerBase
   {
     private readonly ApplicationDBContext _context;
-    public ShopController(ApplicationDBContext context)
+    private readonly IShopRepository _repo;
+
+    public ShopController(ApplicationDBContext context, IShopRepository repo)
     {
       _context = context;
+      _repo = repo;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll() 
     {
-      var shops = await _context.Shop.ToListAsync();
+      var shops = await _repo.GetAllAsync();
       var shopDto = shops.Select(s => s.ToShopDto());
       // should we return shopDto?
       return Ok(shops);
@@ -32,7 +36,7 @@ namespace api.Controllers
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
-      var shop = await _context.Shop.FindAsync(id);
+      var shop = await _repo.GetByIdAsync(id);
 
       if (shop ==  null) {
         return NotFound();
@@ -45,8 +49,7 @@ namespace api.Controllers
     public async Task<IActionResult> Create([FromBody] CreateShopDto shopDto)
     {
       var shopModel = shopDto.ToShopFromCreateDto();
-      await _context.Shop.AddAsync(shopModel);
-      await _context.SaveChangesAsync();
+      await _repo.CreateAsync(shopModel);
       return CreatedAtAction(nameof(GetById), new { id = shopModel.Id }, shopModel.ToShopDto());
     }
 
@@ -54,19 +57,12 @@ namespace api.Controllers
     [Route("{id}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] CreateShopDto shopDto)
     {
-      var shopModel = await _context.Shop.FirstOrDefaultAsync(x => x.Id == id);
+      var shopModel = await _repo.UpdateAsync(id, shopDto);
 
       if (shopModel == null)
       {
         return NotFound();
       }
-
-      shopModel.CompanyName = shopDto.CompanyName;
-      shopModel.Location = shopDto.Location;
-      shopModel.Industry = shopDto.Industry;
-      shopModel.Type = shopDto.Type;
-
-      await _context.SaveChangesAsync();
 
       return Ok(shopModel.ToShopDto());
     }
@@ -75,15 +71,12 @@ namespace api.Controllers
     [Route("{id}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-      var shopModel = await _context.Shop.FirstOrDefaultAsync(x => x.Id == id);
+      var shopModel = await _repo.DeleteAsync(id);
 
       if (shopModel == null)
       {
         return NotFound();
       }
-
-      _context.Shop.Remove(shopModel);
-      await _context.SaveChangesAsync();
 
       return NoContent();
     }
