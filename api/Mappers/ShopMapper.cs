@@ -17,7 +17,8 @@ namespace api.Mappers
         CompanyName = shopModel.CompanyName,
         Location = shopModel.Location,
         Industry = shopModel.Industry,
-        Type = shopModel.Type
+        Type = shopModel.Type,
+        Products = shopModel.Products.Select(p => p.ToProductDto()).ToList()
       };
     }
 
