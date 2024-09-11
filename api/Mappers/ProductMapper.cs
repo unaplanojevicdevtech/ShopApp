@@ -29,6 +29,17 @@ namespace api.Mappers
         ShopId = shopId,
         Name = productModel.Name,
         Price = productModel.Price,
+        IsAvailable = productModel.IsAvailable
+      };
+    }
+
+    public static Product ToProductFromUpdate(this CreateProductDto productModel)
+    {
+      return new Product
+      {
+        Name = productModel.Name,
+        Price = productModel.Price,
+        IsAvailable = productModel.IsAvailable
       };
     }
   }

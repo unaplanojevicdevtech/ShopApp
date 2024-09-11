@@ -55,7 +55,21 @@ namespace api.Controllers
 
       var productModel = productDto.ToProductFromCreate(shopId); // shouldn't productDto also be sent?
       await _repo.CreateAsync(productModel);
-      return CreatedAtAction(nameof(GetById), new { id = productModel }, productModel.ToProductDto());
+      return CreatedAtAction(nameof(GetById), new { id = productModel.Id }, productModel.ToProductDto());
+    }
+
+    [HttpPut]
+    [Route("{id}")]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] CreateProductDto productDto)
+    {
+      var productModel = await _repo.UpdateAsync(id, productDto.ToProductFromUpdate());
+
+      if (productModel == null)
+      {
+        return NotFound("Product not found");
+      }
+
+      return Ok(productModel.ToProductDto());
     }
   }
 }

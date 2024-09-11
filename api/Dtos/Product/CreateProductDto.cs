@@ -9,5 +9,6 @@ namespace api.Dtos.Product
   {
     public string Name { get; set; } = string.Empty;
     public double Price { get; set; }
+    public bool IsAvailable { get; set; }
   }
 }

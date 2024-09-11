@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Dtos.Product;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,24 @@ namespace api.Repository
     public async Task<Product?> GetByIdAsync(int id)
     {
       return await _context.Products.FindAsync(id);
+    }
+
+    public async Task<Product?> UpdateAsync(int id, Product productModel)
+    {
+      var existingProduct = await _context.Products.FindAsync(id);
+
+      if (existingProduct == null)
+      {
+        return null;
+      }
+
+      existingProduct.Name = productModel.Name;
+      existingProduct.Price = productModel.Price;
+      existingProduct.IsAvailable = productModel.IsAvailable;
+
+      await _context.SaveChangesAsync();
+
+      return existingProduct;
     }
   }
 }
