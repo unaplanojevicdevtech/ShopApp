@@ -49,7 +49,12 @@ namespace api.Repository
       return await _context.Shop.Include(s => s.Products).FirstOrDefaultAsync(i => i.Id == id);
     }
 
-    public async Task<Shop?> UpdateAsync(int id, CreateShopDto shop)
+    public Task<bool> ShopExists(int id)
+    {
+      return _context.Shop.AnyAsync(s => s.Id == id);
+    }
+
+        public async Task<Shop?> UpdateAsync(int id, CreateShopDto shop)
     {
       var existingShop = await _context.Shop.FirstOrDefaultAsync(x => x.Id == id);
 

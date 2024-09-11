@@ -14,5 +14,6 @@ namespace api.Interfaces
     Task<Shop> CreateAsync(Shop shop);
     Task<Shop?> UpdateAsync(int id, CreateShopDto shop);
     Task<Shop?> DeleteAsync(int id);
+    Task<bool> ShopExists(int id);
   }
 }

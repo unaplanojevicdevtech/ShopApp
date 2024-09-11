@@ -21,5 +21,15 @@ namespace api.Mappers
         IsAvailable = productModel.IsAvailable
       };
     }
+
+    public static Product ToProductFromCreate(this CreateProductDto productModel, int shopId)
+    {
+      return new Product
+      {
+        ShopId = shopId,
+        Name = productModel.Name,
+        Price = productModel.Price,
+      };
+    }
   }
 }
