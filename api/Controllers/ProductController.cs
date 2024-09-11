@@ -71,5 +71,20 @@ namespace api.Controllers
 
       return Ok(productModel.ToProductDto());
     }
+
+    [HttpDelete]
+    [Route("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+      var productModel = await _repo.DeleteAsync(id);
+
+      if (productModel == null)
+      {
+        return NotFound("Product does not exist");
+      }
+
+      return NoContent();
+      // OK(productModel)
+    }
   }
 }
