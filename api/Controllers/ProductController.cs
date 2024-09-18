@@ -7,6 +7,7 @@ using api.Dtos.Product;
 using api.Interfaces;
 using api.Mappers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace api.Controllers
 {
@@ -26,15 +27,25 @@ namespace api.Controllers
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var products = await _repo.GetAllAsync();
       var productsDto = products.Select(p => p.ToProductDto());
 
       return Ok(productsDto);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var product = await _repo.GetByIdAsync(id);
 
       if (product == null)
@@ -45,9 +56,14 @@ namespace api.Controllers
       return Ok(product.ToProductDto());
     }
     
-    [HttpPost("{shopId}")]
+    [HttpPost("{shopId:int}")]
     public async Task<IActionResult> Create([FromRoute] int shopId, CreateProductDto productDto)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       if (!await _shopRepo.ShopExists(shopId))
       {
         return BadRequest("Shop does not exist");
@@ -59,9 +75,14 @@ namespace api.Controllers
     }
 
     [HttpPut]
-    [Route("{id}")]
+    [Route("{id:int}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] CreateProductDto productDto)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var productModel = await _repo.UpdateAsync(id, productDto.ToProductFromUpdate());
 
       if (productModel == null)
@@ -73,9 +94,14 @@ namespace api.Controllers
     }
 
     [HttpDelete]
-    [Route("{id}")]
+    [Route("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var productModel = await _repo.DeleteAsync(id);
 
       if (productModel == null)

@@ -27,15 +27,25 @@ namespace api.Controllers
     [HttpGet]
     public async Task<IActionResult> GetAll() 
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+  
       var shops = await _repo.GetAllAsync();
       var shopDto = shops.Select(s => s.ToShopDto());
       // should we return shopDto?
       return Ok(shops);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var shop = await _repo.GetByIdAsync(id);
 
       if (shop ==  null) {
@@ -48,15 +58,25 @@ namespace api.Controllers
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateShopDto shopDto)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var shopModel = shopDto.ToShopFromCreateDto();
       await _repo.CreateAsync(shopModel);
       return CreatedAtAction(nameof(GetById), new { id = shopModel.Id }, shopModel.ToShopDto());
     }
 
     [HttpPut]
-    [Route("{id}")]
+    [Route("{id:int}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] CreateShopDto shopDto)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var shopModel = await _repo.UpdateAsync(id, shopDto);
 
       if (shopModel == null)
@@ -68,9 +88,14 @@ namespace api.Controllers
     }
 
     [HttpDelete]
-    [Route("{id}")]
+    [Route("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
       var shopModel = await _repo.DeleteAsync(id);
 
       if (shopModel == null)
