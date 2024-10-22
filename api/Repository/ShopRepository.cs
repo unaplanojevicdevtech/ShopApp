@@ -54,6 +54,14 @@ namespace api.Repository
         shops = shops.Where(s => s.Location.Contains(query.Location));
       }
 
+      if (!string.IsNullOrWhiteSpace(query.SortBy))
+      {
+        if (query.SortBy.Equals("CompanyName", StringComparison.OrdinalIgnoreCase))
+        {
+          shops = query.IsDesc ? shops.OrderByDescending(s => s.CompanyName) : shops.OrderBy(s => s.CompanyName);
+        }
+      }
+
       return await shops.ToListAsync();
     }
 
