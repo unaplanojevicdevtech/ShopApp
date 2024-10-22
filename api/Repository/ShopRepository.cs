@@ -62,7 +62,9 @@ namespace api.Repository
         }
       }
 
-      return await shops.ToListAsync();
+      var skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+      return await shops.Skip(skipNumber).Take(query.PageSize).ToListAsync();
     }
 
     public async Task<Shop?> GetByIdAsync(int id)
