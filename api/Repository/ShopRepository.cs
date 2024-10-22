@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Shop;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -39,9 +40,21 @@ namespace api.Repository
       return shop;
     }
 
-    public async Task<List<Shop>> GetAllAsync()
+    public async Task<List<Shop>> GetAllAsync(QueryObject query)
     {
-      return await _context.Shop.Include(s => s.Products).ToListAsync();;
+      var shops = _context.Shop.Include(s => s.Products).AsQueryable();
+
+      if (!string.IsNullOrWhiteSpace(query.CompanyName)) 
+      {
+        shops = shops.Where(s => s.CompanyName.Contains(query.CompanyName));
+      }
+
+      if (!string.IsNullOrWhiteSpace(query.Location))
+      {
+        shops = shops.Where(s => s.Location.Contains(query.Location));
+      }
+
+      return await shops.ToListAsync();
     }
 
     public async Task<Shop?> GetByIdAsync(int id)
